@@ -49,11 +49,3 @@ jobs:
         with:
           image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           format: 'table'
-
-      - name: Notify on Failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_COLOR: danger
-          SLACK_MESSAGE: "❌ Docker build or scan failed on main branch."
