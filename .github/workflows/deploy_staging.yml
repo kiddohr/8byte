@@ -1,0 +1,42 @@
+name: Deploy to ECS Staging
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image to ECR"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to ECS Staging
+        run: |
+          aws ecs update-service \
+            --cluster servlet-staging-cluster \
+            --service servlet-staging-service \
+            --force-new-deployment
+
+      - name: Notify Success
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: good
+          SLACK_MESSAGE: "✅ Staging deployment succeeded for latest build."
+
+      - name: Notify Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: danger
+          SLACK_MESSAGE: "❌ Staging deployment failed."
