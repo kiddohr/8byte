@@ -1,5 +1,4 @@
 variable "public_subnet_id"{}
-variable "image_uri" {}
 variable "security_group" {}
 variable "target_group" {
   
