@@ -5,7 +5,7 @@ variable "target_group" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "ecs_8byte_cluster"
+  name = "ecs-8byte-cluster"
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "webapp" {
 }
 
 resource "aws_ecs_service" "webapp_service" {
-  name = "web_app"
+  name = "web-app"
   cluster = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.webapp.arn
   launch_type = "FARGATE"

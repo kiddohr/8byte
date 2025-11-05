@@ -3,7 +3,7 @@ variable "security_group" {}
 variable "subnet_id" {}
 
 resource "aws_lb" "alb_8byte" {
-  name = "alb_8byte"
+  name = "alb-8byte"
   internal = false
   load_balancer_type = "application"
   security_groups = [var.security_group]
@@ -11,7 +11,7 @@ resource "aws_lb" "alb_8byte" {
 }
 
 resource "aws_lb_target_group" "alb_tg" {
-  name = "alb_tg"
+  name = "alb-tg"
   port = 8080
   protocol = "HTTP"
   vpc_id = var.vpc_id

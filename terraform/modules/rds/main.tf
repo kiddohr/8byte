@@ -3,7 +3,7 @@ variable "subnet_group" {}
 variable "security_groups" {}
 
 resource "aws_db_instance" "rds_8byte" {
-  identifier = "postgre_8byte"
+  identifier = "postgre-8byte"
   engine = "postgres"
   instance_class = var.db_instance_class
   allocated_storage = var.db_allocated_storage
