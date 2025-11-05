@@ -39,10 +39,12 @@ jobs:
 
       # 4️⃣ Build and test app
       - name: Build and run tests
+        working-directory: onlinebookstore
         run: mvn clean verify
 
       # 5️⃣ Package WAR
       - name: Package WAR
+        working-directory: onlinebookstore
         run: mvn package -DskipTests
 
       # 6️⃣ Configure AWS credentials
@@ -60,6 +62,7 @@ jobs:
 
       # 8️⃣ Build Docker image with WAR
       - name: Build Docker image
+        working-directory: onlinebookstore
         run: |
           docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
 
