@@ -84,11 +84,11 @@ jobs:
 
       - name: Terraform Plan (Staging)
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+        run: terraform plan -var "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
 
       - name: Terraform Apply (Staging)
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+        run: terraform apply -auto-approve -var "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
 
       # 1️⃣1️⃣ Manual approval before production
       - name: Wait for manual approval
@@ -103,8 +103,8 @@ jobs:
       # 1️⃣2️⃣ Deploy to Production
       - name: Terraform Plan (Prod)
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+        run: terraform plan -var "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
 
       - name: Terraform Apply (Prod)
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+        run: terraform apply -auto-approve -var "image_url=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
