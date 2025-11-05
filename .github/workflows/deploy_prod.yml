@@ -1,0 +1,39 @@
+name: Deploy to ECS Production
+
+on:
+  workflow_dispatch:   # Manual trigger only
+
+jobs:
+  approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for manual approval
+        run: echo "✅ Deployment will proceed once manually approved."
+
+  deploy:
+    needs: approve
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://your-production-domain.com
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to ECS Production
+        run: |
+          aws ecs update-service \
+            --cluster servlet-prod-cluster \
+            --service servlet-prod-service \
+            --force-new-deployment
+
+      - name: Notify Production Success
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_COLOR: good
+          SLACK_MESSAGE: "🚀 Production deployment completed successfully."
