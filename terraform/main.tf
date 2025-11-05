@@ -7,7 +7,7 @@ module "vpc_8byte" {
 
 module "ecs_8byte_cluster"{
     source = "./modules/ecs"
-    public_subnet_id = module.vpc_8byte.public_subnet_id
+    public_subnet_id = module.vpc_8byte.public_subnet_a_id
     image_uri = var.image_uri
     security_group = module.security_groups.ecs_sg
     target_group = module.alb.target_group
