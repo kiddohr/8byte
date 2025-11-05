@@ -33,5 +33,5 @@ module "alb"{
   source = "./modules/loadbalancer"
   vpc_id = module.vpc_8byte.vpc_id
   security_group = module.security_groups.alb_sg
-  subnet_id = module.vpc_8byte.public_subnet_id
+  subnet_id = [module.vpc_8byte.public_subnet_a_id, module.vpc_8byte.public_subnet_b_id]
 }
