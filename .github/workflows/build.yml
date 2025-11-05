@@ -1,51 +1,47 @@
-name: Build and Push Docker Image to ECR
+name: Test and Build WAR
 
 on:
+  pull_request:
+    branches: [ main ]
   push:
     branches: [ main ]
 
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: servlet-app-repo
-  IMAGE_TAG: latest
-
 jobs:
-  build:
+  test-build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Step 1: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Set up Java
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'temurin'    # AdoptOpenJDK distribution
           java-version: '17'
 
-      - name: Build WAR file
-        run: mvn -B clean package
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      # Step 3: Cache Maven dependencies (faster builds)
+      - name: Cache Maven packages
+        uses: actions/cache@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
 
-      - name: Login to ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      # Step 4: Install dependencies and compile
+      - name: Compile and run tests
+        run: mvn clean verify
 
-      - name: Build, Tag, and Push image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
-          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+      # Step 5: Build WAR file
+      - name: Package WAR file
+        run: mvn package -DskipTests
 
-      - name: Container Vulnerability Scan
-        uses: aquasecurity/trivy-action@master
+      # Step 6: Upload WAR as build artifact (optional)
+      - name: Upload WAR file
+        uses: actions/upload-artifact@v4
         with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
-          format: 'table'
+          name: servlet-app-war
+          path: target/*.war
