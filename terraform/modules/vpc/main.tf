@@ -66,7 +66,7 @@ resource "aws_db_subnet_group" "subnetgroup_for_rds" {
 }
 
 output "public_subnet_a_id" {
-  value = aws_subnet.public_subnet.id
+  value = aws_subnet.public_subnet_a.id
 }
 output "public_subnet_b_id" {
   value = aws_subnet.public_subnet_b.id
