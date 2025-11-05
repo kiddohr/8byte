@@ -78,8 +78,8 @@ output "private_subnet_b_id" {
   value = aws_subnet.private_subnet_b.id
 }
 
-output "subnetgroup_for_rds"{
-  value = aws_db_subnet_group.subnetgroup_for_rds
+output "subnetgroup_for_rds_name"{
+  value = aws_db_subnet_group.subnetgroup_for_rds.name
 }
 
 output "vpc_id" {
